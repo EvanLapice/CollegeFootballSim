@@ -18,5 +18,8 @@
     <ClCompile Include="CollegeFootballSim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="team.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
