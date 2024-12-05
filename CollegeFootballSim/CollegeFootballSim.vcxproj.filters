@@ -24,12 +24,18 @@
     <ClCompile Include="Conference.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CollegeTeamManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Team.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Conference.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollegeTeamManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
