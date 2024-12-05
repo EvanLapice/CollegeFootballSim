@@ -1,60 +1,40 @@
-#include <iostream>
-#include <string>
-#include <iomanip>
+#include "Team.h"
 
-class Team {
-private:
-	std::string teamName;
-	std::string teamLocation;
-	int wins;
-	int losses;
-	std::string teamRecord;
-	int teamRank;
+void Team::updateRecord() {
+	teamRecord = std::to_string(wins) + std::string(" - ") + std::to_string(losses);
+}
 
-	void updateRecord() {
-        teamRecord = std::to_string(wins) + std::string(" - ") + std::to_string(losses);
-	}
+Team::Team(std::string location, std::string name)
+	: teamLocation(location), teamName(name), wins(0), losses(0), teamRank(0) {
+	updateRecord();
+}
 
-public:
-    // Constructor
-    Team(std::string name, std::string location)
-        : teamName(name), teamLocation(location), wins(0), losses(0), teamRank(0) {
-        updateRecord();
-    }
+void Team::addWin() {
+	wins++;
+	updateRecord();
+}
 
-    // Methods to modify team stats
-    void addWin() {
-        wins++;
-        updateRecord();
-    }
+void Team::addLoss() {
+	losses++;
+	updateRecord();
+}
 
-    void addLoss() {
-        losses++;
-        updateRecord();
-    }
+std::string Team::getTeamName() const { return teamName; }
+std::string Team::getTeamLocation() const { return teamLocation; }
+int Team::getWins() const { return wins; }
+int Team::getLosses() const { return losses; }
+std::string Team::getTeamRecord() const { return teamRecord; }
+int Team::getTeamRank() const { return teamRank; }
 
-    // Getters
-    std::string getTeamName() const { return teamName; }
-    std::string getTeamLocation() const { return teamLocation; }
-    int getWins() const { return wins; }
-    int getLosses() const { return losses; }
-    std::string getTeamRecord() const { return teamRecord; }
-    int getTeamRank() const { return teamRank; }
+void Team::setTeamName(const std::string& name) { teamName = name; }
+void Team::setTeamLocation(const std::string& location) { teamLocation = location; }
+void Team::setTeamRank(int rank) { teamRank = rank; }
 
-    // Setters
-    void setTeamName(const std::string& name) { teamName = name; }
-    void setTeamLocation(const std::string& location) { teamLocation = location; }
-    void setTeamRank(int rank) { teamRank = rank; }
-
-    // Display team information
-    void displayTeamInfo() const {
-        std::cout << "\n=== Team Information ===\n";
-        std::cout << "Team Name: " << teamName << "\n";
-        std::cout << "Location: " << teamLocation << "\n";
-        std::cout << "Record: " << teamRecord << "\n";
-        std::cout << "Rank: " << teamRank << "\n";
-        std::cout << "=====================\n";
-    }
-
-
-};
+void Team::displayTeamInfo() const {
+	std::cout << "\n=== Team Information ===\n";
+	std::cout << "Location: " << teamLocation << "\n";
+	std::cout << "Team Name: " << teamName << "\n";
+	std::cout << "Record: " << teamRecord << "\n";
+	std::cout << "Rank: " << teamRank << "\n";
+	std::cout << "=====================\n";
+}
