@@ -1,14 +1,16 @@
-#ifndef COLLEGE_TEAM_MANAGER_H
-#define COLLEGE_TEAM_MANAGER_H
+#ifndef COLLEGETEAMMANAGER_H
+#define COLLEGETEAMMANAGER_H
 
 #include "Conference.h"
 #include "Team.h"
-#include <map>
+#include <vector>
+#include <string>
 
 class CollegeTeamManager {
 private:
-    std::map<std::string, Conference> conferences;
+    std::vector<Conference> conferences; // Holds all conferences.
 
+    // Private methods to initialize each conference
     void initACC();
     void initAmerican();
     void initBig12();
@@ -16,21 +18,31 @@ private:
     void initCUSA();
     void initIndependents();
 
-public:
-    CollegeTeamManager();
-    void initializeAllConferences();
-    void displayAllConferences() const;
-    Conference& getConference(const std::string& name);
-    
-    void displayACC_Conference() const;
-    void displayAmerican_Conference() const;
-    void displayBig12_Conference() const;
-    void displayBigTen_Conference() const;
-    void displayCUSA_Conference() const;
-    void displayIndependents_Conference() const;
+    // Helper function to find a conference by name
+    Conference* findConferenceByName(const std::string& name);
+    const bool win = true;
+    const bool loss = false;
 
+public:
+    // Constructor
+    CollegeTeamManager();
+
+    // Initialize all conferences
+    void initializeAllConferences();
+
+    // Display methods
+    void displayAllConferences() const;
+    void displaySpecificConference(const std::string& name) const;
+
+    // Manage team records
     void addWinToTeam(const std::string& teamName);
     void addLossToTeam(const std::string& teamName);
+
+    // Helper function to find a team by name
+    Team* findTeamByName(const std::string& teamName);
+
+    // Method to display a specific team's information
+    void displaySpecificTeam(const std::string& teamName) const;
 };
 
-#endif
+#endif // COLLEGETEAMMANAGER_H

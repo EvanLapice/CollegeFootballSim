@@ -1,4 +1,3 @@
-// Conference.h
 #ifndef CONFERENCE_H
 #define CONFERENCE_H
 
@@ -9,21 +8,26 @@
 class Conference {
 private:
     std::string conferenceName;
-    std::vector<Team> conferenceTeams;
+    std::vector<Team> teams; // Holds the list of teams in the conference.
 
 public:
-    Conference();
-    Conference(std::string name);
+    // Constructor
+    Conference(const std::string& name);
 
-    std::string getConferenceName() const;
-    void setConferenceName(const std::string& name);
-
-    // Add both const and non-const versions
-    const std::vector<Team>& getConferenceTeams() const;
-    std::vector<Team>& getConferenceTeams();
-
+    // Add a team to the conference
     void addTeam(const Team& team);
-    void displayConference() const;
+
+    // Get the list of teams in the conference
+    std::vector<Team> getTeams() const;
+
+    // Display all teams in the conference
+    void displayTeams() const;
+
+    // Get conference name
+    std::string getConferenceName() const;
+
+    // Set conference name
+    void setConferenceName(const std::string& name);
 };
 
-#endif
+#endif // CONFERENCE_H
