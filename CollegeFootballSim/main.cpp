@@ -13,17 +13,18 @@ int main() {
     manager.displayAllConferences();*/
 
     // Add a win to Clemson
-    std::cout << "\nAdding a win to Colorado Buffs...\n";
-    manager.addWinToTeam("Colorado");
+    std::cout << "\nAdding a win to Arizone State...\n";
+    manager.addWinToTeam("Arizona State");
 
     // Add a loss to Florida State
-    std::cout << "\nAdding a loss to Kansas...\n";
-    manager.addLossToTeam("Kansas");
+    std::cout << "\nAdding a loss to Arizona...\n";
+    manager.addLossToTeam("Arizona");
 
     // Display the ACC conference to see the updated records
-    std::cout << "\nDisplaying the Big 12:\n";
+    //std::cout << "\nDisplaying the Big 12:\n";
     manager.displaySpecificConference("Big 12");
 
-    manager.displaySpecificTeam("Clemson");
+    manager.displaySpecificTeam("Arizona State");
+    manager.displaySpecificTeam("Arizona");
     return 0;
 }
