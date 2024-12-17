@@ -17,8 +17,9 @@ public:
     // Add a team to the conference
     void addTeam(const Team& team);
 
-    // Get the list of teams in the conference
-    std::vector<Team> getTeams() const;
+    // Get the list of teams in the conference s a reference
+    std::vector<Team>& getTeams();
+    const std::vector<Team>& getTeams() const;
 
     // Display all teams in the conference
     void displayTeams() const;

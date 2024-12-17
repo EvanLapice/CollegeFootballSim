@@ -5,6 +5,9 @@
 #include "Team.h"
 #include <vector>
 #include <string>
+#include <random>
+#include <algorithm>
+#include <map>
 
 class CollegeTeamManager {
 private:
@@ -43,6 +46,17 @@ public:
 
     // Method to display a specific team's information
     void displaySpecificTeam(const std::string& teamName) const;
+
+    // Method to retrieve a reference to a specific conference by name
+    Conference* getConference(const std::string& name);
+
+
+    ///
+
+    void generateConferenceSchedules();
+    void generateIndependentSchedules();
+
+
 };
 
 #endif // COLLEGETEAMMANAGER_H

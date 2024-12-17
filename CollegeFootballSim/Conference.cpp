@@ -9,8 +9,13 @@ void Conference::addTeam(const Team& team) {
     teams.push_back(team);
 }
 
-// Get the list of teams in the conference
-std::vector<Team> Conference::getTeams() const {
+// Return the list of teams as a reference (non-const)
+std::vector<Team>& Conference::getTeams() {
+    return teams;
+}
+
+// Return the list of teams as a reference (const)
+const std::vector<Team>& Conference::getTeams() const {
     return teams;
 }
 
