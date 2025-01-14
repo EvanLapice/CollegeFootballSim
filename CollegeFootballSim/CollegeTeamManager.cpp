@@ -1,5 +1,6 @@
 #include "CollegeTeamManager.h"
 #include <iostream>
+#include <iomanip> 
 
 // Constructor
 CollegeTeamManager::CollegeTeamManager() {
@@ -10,6 +11,7 @@ CollegeTeamManager::CollegeTeamManager() {
 	conferences.emplace_back("Big Ten");
 	conferences.emplace_back("Conference USA");
 	conferences.emplace_back("FBS Independents");
+	conferences.emplace_back("SEC");
 }
 
 // Helper: Find a conference by name
@@ -132,6 +134,7 @@ void CollegeTeamManager::initCUSA() {
 	}
 }
 
+
 // Initialize Independents
 void CollegeTeamManager::initIndependents() {
 	Conference* independents = findConferenceByName("FBS Independents");
@@ -139,6 +142,29 @@ void CollegeTeamManager::initIndependents() {
 		independents->addTeam(Team("FBS Independents", "Massachusetts", "Minutemen"));
 		independents->addTeam(Team("FBS Independents", "Notre Dame", "Fighting Irish"));
 		independents->addTeam(Team("FBS Independents", "UConn", "Huskies"));
+	}
+}
+
+void CollegeTeamManager::initSEC()
+{
+	Conference* sec = findConferenceByName("SEC");
+	if (sec) {
+		sec->addTeam(Team("SEC", "Alabama", "Crimson Tide"));
+		sec->addTeam(Team("SEC", "Arkansas", "Razorbacks"));
+		sec->addTeam(Team("SEC", "Auburn", "Tigers"));
+		sec->addTeam(Team("SEC", "Florida", "Gators"));
+		sec->addTeam(Team("SEC", "Georgia", "Bulldogs"));
+		sec->addTeam(Team("SEC", "Kentucky", "Wildcats"));
+		sec->addTeam(Team("SEC", "LSU", "Tigers"));
+		sec->addTeam(Team("SEC", "Mississippi State", "Bulldogs"));
+		sec->addTeam(Team("SEC", "Missouri", "Tigers"));
+		sec->addTeam(Team("SEC", "Ole Miss", "Rebels"));
+		sec->addTeam(Team("SEC", "South Carolina", "Gamecocks"));
+		sec->addTeam(Team("SEC", "Tennessee", "Volunteers"));
+		sec->addTeam(Team("SEC", "Texas", "Longhorns"));
+		sec->addTeam(Team("SEC", "Texas A&M", "Aggies"));
+		sec->addTeam(Team("SEC", "Vanderbilt", "Commodores"));
+		sec->addTeam(Team("SEC", "Oklahoma", "Sooners"));
 	}
 }
 
@@ -150,6 +176,7 @@ void CollegeTeamManager::initializeAllConferences() {
 	initBigTen();
 	initCUSA();
 	initIndependents();
+	initSEC();
 }
 
 
@@ -234,7 +261,6 @@ Conference* CollegeTeamManager::getConference(const std::string& name) {
 	}
 	return nullptr; // Return nullptr if not found
 }
-// Generate 8 random games within each conference (except FBS Independents)
 void CollegeTeamManager::generateConferenceSchedules() {
 	std::map<std::string, int> teamGameCounts;
 
@@ -244,30 +270,40 @@ void CollegeTeamManager::generateConferenceSchedules() {
 		std::vector<Team*> teams;
 		for (auto& team : conference.getTeams()) {
 			teams.push_back(&team);
-			teamGameCounts[team.getTeamName()] = 0; // Initialize game count
+			teamGameCounts[team.getTeamName()] = 0;
 		}
 
 		std::cout << "\nScheduling 8 games for the " << conference.getConferenceName() << ":\n";
 		std::cout << "-----------------------------------\n";
 
-		while (true) {
-			// Shuffle teams for random pairings
+		int maxAttempts = 1000; // Prevent infinite loops
+		int attempts = 0;
+
+		while (attempts < maxAttempts) {
 			std::shuffle(teams.begin(), teams.end(), std::mt19937(std::random_device()()));
 
 			bool allGamesScheduled = true;
 
 			// Pair teams and schedule games
-			for (size_t i = 0; i + 1 < teams.size(); i += 2) {
-				Team* team1 = teams[i];
-				Team* team2 = teams[i + 1];
+			for (size_t i = 0; i < teams.size(); i++) {
+				// Find a valid opponent for team[i]
+				for (size_t j = i + 1; j < teams.size(); j++) {
+					Team* team1 = teams[i];
+					Team* team2 = teams[j];
 
-				if (teamGameCounts[team1->getTeamName()] < 8 &&
-					teamGameCounts[team2->getTeamName()] < 8) {
+					// Skip if teams are the same or if either team has enough games
+					if (team1->getTeamName() == team2->getTeamName() ||
+						teamGameCounts[team1->getTeamName()] >= 8 ||
+						teamGameCounts[team2->getTeamName()] >= 8) {
+						continue;
+					}
+
+					// In generateConferenceSchedules(), replace the std::cout with:
 					std::cout << team1->getTeamName() << " vs " << team2->getTeamName() << "\n";
-
-					// Increment game counts
+					scheduledGames.emplace_back(team1, team2);
 					teamGameCounts[team1->getTeamName()]++;
 					teamGameCounts[team2->getTeamName()]++;
+					break;
 				}
 			}
 
@@ -279,12 +315,16 @@ void CollegeTeamManager::generateConferenceSchedules() {
 				}
 			}
 
-			if (allGamesScheduled) break; // Exit the loop if all teams are done
+			if (allGamesScheduled) break;
+			attempts++;
+		}
+
+		if (attempts >= maxAttempts) {
+			std::cerr << "Warning: Could not schedule all games for " << conference.getConferenceName() << "\n";
 		}
 	}
 }
 
-// Generate schedules for FBS Independents by pairing with under-scheduled teams
 void CollegeTeamManager::generateIndependentSchedules() {
 	std::map<std::string, int> teamGameCounts;
 
@@ -298,7 +338,7 @@ void CollegeTeamManager::generateIndependentSchedules() {
 	std::vector<Team*> independents;
 
 	// Get FBS Independent teams
-	for (auto& team : conferences.at(5).getTeams()) { // Assuming FBS Independents are at index 5
+	for (auto& team : conferences.at(5).getTeams()) {
 		independents.push_back(&team);
 	}
 
@@ -307,33 +347,109 @@ void CollegeTeamManager::generateIndependentSchedules() {
 
 	for (auto& independent : independents) {
 		while (teamGameCounts[independent->getTeamName()] < 8) {
-			// Find under-scheduled teams from other conferences
 			std::vector<Team*> availableTeams;
 
 			for (auto& conference : conferences) {
 				if (conference.getConferenceName() == "FBS Independents") continue;
 
 				for (auto& team : conference.getTeams()) {
-					if (teamGameCounts[team.getTeamName()] < 8) {
+					// Only add teams that:
+					// 1. Are not the independent team itself
+					// 2. Have less than 8 games scheduled
+					if (team.getTeamName() != independent->getTeamName() &&
+						teamGameCounts[team.getTeamName()] < 8) {
 						availableTeams.push_back(&team);
 					}
 				}
 			}
 
-			if (availableTeams.empty()) break; // No available teams left
+			if (availableTeams.empty()) break;
 
-			// Randomly pick an opponent
 			std::shuffle(availableTeams.begin(), availableTeams.end(),
 				std::mt19937(std::random_device()()));
 
 			Team* opponent = availableTeams.front();
 
-			// Schedule the game
+			// In generateIndependentSchedules(), replace similar code:
 			std::cout << independent->getTeamName() << " vs " << opponent->getTeamName() << "\n";
-
-			// Update game counts
+			scheduledGames.emplace_back(independent, opponent);
 			teamGameCounts[independent->getTeamName()]++;
 			teamGameCounts[opponent->getTeamName()]++;
 		}
+	}
+}
+void CollegeTeamManager::simulateAllGames() {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, 1);
+
+	std::cout << "\nSimulating all games:\n";
+	std::cout << "----------------------\n";
+
+	for (const auto& game : scheduledGames) {
+		bool team1Wins = dis(gen) == 1;
+
+		if (team1Wins) {
+			game.team1->addWin();
+			game.team2->addLoss();
+			std::cout << game.team1->getTeamName() << " defeats " << game.team2->getTeamName() << "\n";
+		}
+		else {
+			game.team2->addWin();
+			game.team1->addLoss();
+			std::cout << game.team2->getTeamName() << " defeats " << game.team1->getTeamName() << "\n";
+		}
+	}
+}
+
+void CollegeTeamManager::displayAllTeamRecords() const {
+	std::cout << "\nFinal Team Records:\n";
+	std::cout << "-------------------\n";
+
+	for (const auto& conference : conferences) {
+		std::cout << "\n" << conference.getConferenceName() << ":\n";
+		for (const auto& team : conference.getTeams()) {
+			std::cout << team.getTeamName() << ": "
+				<< team.getWins() << "-" << team.getLosses()
+				<< " (" << team.getTeamRecord() << ")\n";
+		}
+	}
+}
+
+// Add to CollegeTeamManager.cpp:
+void CollegeTeamManager::displayTop25() const {
+	// Create a vector of all teams
+	std::vector<std::pair<const Team*, double>> allTeams;
+
+	// Collect all teams and calculate their winning percentage
+	for (const auto& conference : conferences) {
+		for (const auto& team : conference.getTeams()) {
+			double totalGames = team.getWins() + team.getLosses();
+			double winPercentage = totalGames > 0 ?
+				(static_cast<double>(team.getWins()) / totalGames) : 0.0;
+			allTeams.emplace_back(&team, winPercentage);
+		}
+	}
+
+	// Sort teams by winning percentage
+	std::sort(allTeams.begin(), allTeams.end(),
+		[](const auto& a, const auto& b) {
+			if (a.second != b.second) {
+				return a.second > b.second; // Higher percentage first
+			}
+			return a.first->getWins() > b.first->getWins(); // More wins if tied
+		});
+
+	// Display top 25
+	std::cout << "\nTop 25 Teams:\n";
+	std::cout << "=============\n";
+
+	for (size_t i = 0; i < std::min(size_t(25), allTeams.size()); ++i) {
+		const Team* team = allTeams[i].first;
+		std::cout << (i + 1) << ". "
+			<< std::left << std::setw(25) << team->getTeamName()
+			<< std::left << std::setw(20) << team->getTeamLocation()
+			<< std::left << std::setw(15) << team->getTeamConference()
+			<< team->getTeamRecord() << "\n";
 	}
 }
